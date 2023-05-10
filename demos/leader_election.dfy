@@ -106,9 +106,9 @@ ghost predicate IsChord(c: Constants, v: Variables, start: int, end: int)
 
 ghost predicate Between(start: int, node: int, end: int)
 {
-  if start<end
-  then start<node<end // not wrapped
-  else node<end || start<node // wrapped
+  if start < end
+  then start < node < end // not wrapped
+  else node < end || start < node // wrapped
 }
 
 ghost predicate OnChordHeardDominatesId(c: Constants, v: Variables, start: int, end: int)
