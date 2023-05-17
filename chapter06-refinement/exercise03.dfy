@@ -72,9 +72,9 @@ module TwoPCInvariantProof {
 /*}*/
   }
 
-  lemma InvInductive(c: Constants, v: Variables, v': Variables)
+  lemma InvInductive(c: Constants, v: Variables, v': Variables, event: Event)
     requires Inv(c, v)
-    requires Next(c, v, v')
+    requires Next(c, v, v', event)
     ensures Inv(c, v')
   {
 /*{*/
@@ -86,7 +86,7 @@ module TwoPCInvariantProof {
     // Tej: this proof was flaky in Dafny 4.0.0 and 4.1.0. It probably could go
     // through automatically, but it's fairly big and requires a high
     // rlimit/lots of case splitting.
-    var step :| NextStep(c, v, v', step);
+    var step :| NextStep(c, v, v', event, step);
     if v.hosts[step.hostid].CoordinatorVariables? {
       match step {
         case HostActionStep(hostId, msgOps) => {
@@ -95,7 +95,7 @@ module TwoPCInvariantProof {
             && msg in v'.network.sentMsgs
             && msg.DecisionMsg?
             ensures CoordinatorHost.ObservesResult(CoordinatorConstants(c), CoordinatorVars(c, v'), msg.decision) {
-            var coordStep :| CoordinatorHost.NextStep(CoordinatorConstants(c), CoordinatorVars(c, v), CoordinatorVars(c, v'), coordStep, msgOps);
+            var coordStep :| CoordinatorHost.NextStep(CoordinatorConstants(c), CoordinatorVars(c, v), CoordinatorVars(c, v'), event, coordStep, msgOps);
             match coordStep {
               case LearnVoteStep => {
                 assert msgOps.send.None?;
